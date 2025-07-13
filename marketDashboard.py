@@ -48,9 +48,7 @@ class MarketDashboard:
         """Display all products from database"""
         print("\n=== ALL PRODUCTS ===")
 
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM products ORDER BY id")
-        products = cursor.fetchall()
+        products = get_all_products()
 
         if not products:
             print("No products found in the database.")
