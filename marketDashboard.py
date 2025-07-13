@@ -12,6 +12,7 @@ from appFeatures import (
     get_inventory_value,
     get_low_stock_count,
     get_products_by_category,
+    get_products_by_numeric_filter,
     get_products_count,
     get_valid_input,
     search_product_by_id,
@@ -153,27 +154,11 @@ class MarketDashboard:
         """Generate a summary report"""
         print("\n=== INVENTORY REPORT ===")
 
-        cursor = self.connection.cursor()
-
-        # Total products
-        cursor.execute("SELECT COUNT(*) FROM products")
-        total_products = cursor.fetchone()[0]
-
-        # Total inventory value
-        cursor.execute(
-            "SELECT SUM(CAST(REPLACE(REPLACE(price, '$', ''), ' ', '') AS REAL) * stock) FROM products"
-        )
-        total_value = cursor.fetchone()[0] or 0
-
-        # Low stock products (less than 10)
-        cursor.execute(
-            "SELECT COUNT(*) FROM products WHERE CAST(stock AS INTEGER) < 10"
-        )
-        low_stock_count = cursor.fetchone()[0]
-
-        # Products by category
-        cursor.execute("SELECT category, COUNT(*) FROM products GROUP BY category")
-        categories = cursor.fetchall()
+        # Get report data using appFeatures functions
+        total_products = get_products_count()
+        total_value = get_inventory_value()
+        low_stock_count = get_low_stock_count()
+        categories = get_products_by_category()
 
         print(f"Total Products: {total_products}")
         print(f"Total Inventory Value: ${total_value:.2f}")
@@ -184,7 +169,95 @@ class MarketDashboard:
             for category, count in categories:
                 print(f"  {category}: {count} products")
 
+        # Ask for detailed filter report
+        print("\n" + "=" * 50)
+        filter_option = (
+            input("Do you want a detailed filter report? (y/N): ").strip().lower()
+        )
+
+        if filter_option == "y":
+            self.show_filter_report()
+
         input("\nPress Enter to continue...")
+
+    def show_filter_report(self):
+        """Show detailed filter report by numeric fields"""
+        print("\n=== DETAILED FILTER REPORT ===")
+        print("Filter options:")
+        print("1. By Stock")
+        print("2. By Price")
+
+        field_option = input("\nSelect field to filter by: ").strip()
+
+        if field_option == "1":
+            field = "stock"
+            field_name = "Stock"
+        elif field_option == "2":
+            field = "price"
+            field_name = "Price"
+        else:
+            print("Invalid option.")
+            return
+
+        print(f"\n{field_name} filter conditions:")
+        print("1. Less than (<)")
+        print("2. Equal to (=)")
+        print("3. Greater than (>)")
+        print("4. Between range")
+
+        condition_option = input("\nSelect condition: ").strip()
+
+        try:
+            if condition_option == "1":
+                condition = "<"
+                value = float(input(f"Enter {field_name.lower()} value: "))
+                products = get_products_by_numeric_filter(field, condition, value)
+                print(f"\n✅ Products with {field_name.lower()} < {value}:")
+
+            elif condition_option == "2":
+                condition = "="
+                value = float(input(f"Enter {field_name.lower()} value: "))
+                products = get_products_by_numeric_filter(field, condition, value)
+                print(f"\n✅ Products with {field_name.lower()} = {value}:")
+
+            elif condition_option == "3":
+                condition = ">"
+                value = float(input(f"Enter {field_name.lower()} value: "))
+                products = get_products_by_numeric_filter(field, condition, value)
+                print(f"\n✅ Products with {field_name.lower()} > {value}:")
+
+            elif condition_option == "4":
+                condition = "between"
+                value1 = float(input(f"Enter minimum {field_name.lower()} value: "))
+                value2 = float(input(f"Enter maximum {field_name.lower()} value: "))
+                products = get_products_by_numeric_filter(
+                    field, condition, value1, value2
+                )
+                print(
+                    f"\n✅ Products with {field_name.lower()} between {value1} and {value2}:"
+                )
+
+            else:
+                print("Invalid condition.")
+                return
+
+            # Display filtered products
+            if products:
+                print(
+                    f"{'ID':<5} {'Name':<20} {'Description':<20} {'Price':<15} {'Stock':<10} {'Category':<15}"
+                )
+                print("-" * 90)
+                for product in products:
+                    product_id, name, description, stock, price, category = product
+                    print(
+                        f"{product_id:<5} {name:<20} {description:<20} {price:<15} {stock:<10} {category:<15}"
+                    )
+                print(f"\nTotal found: {len(products)} products")
+            else:
+                print("❌ No products found matching the filter.")
+
+        except ValueError:
+            print("❌ Invalid numeric value.")
 
     def run(self):
         """Main application loop"""

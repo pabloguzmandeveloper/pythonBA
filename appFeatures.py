@@ -265,3 +265,48 @@ def get_products_by_category():
     categories = cursor.fetchall()
     connection.close()
     return categories
+
+
+def get_products_by_numeric_filter(field, condition, value, value2=None):
+    """Filter products by numeric field (stock or price) with conditions
+
+    Args:
+        field: 'stock' or 'price'
+        condition: '<', '=', '>', 'between'
+        value: number for comparison
+        value2: second number for 'between' condition
+
+    Returns:
+        List of products matching the filter
+    """
+    connection, cursor = get_database_connection()
+
+    # Prepare field for SQL query
+    if field == "price":
+        # Remove $ and spaces from price for numeric comparison
+        sql_field = "CAST(REPLACE(REPLACE(price, '$', ''), ' ', '') AS REAL)"
+    else:
+        # Stock is already numeric
+        sql_field = "CAST(stock AS INTEGER)"
+
+    # Build query based on condition
+    if condition == "<":
+        query = f"SELECT * FROM products WHERE {sql_field} < ? ORDER BY {sql_field}"
+        params = (value,)
+    elif condition == "=":
+        query = f"SELECT * FROM products WHERE {sql_field} = ? ORDER BY {sql_field}"
+        params = (value,)
+    elif condition == ">":
+        query = f"SELECT * FROM products WHERE {sql_field} > ? ORDER BY {sql_field}"
+        params = (value,)
+    elif condition == "between":
+        query = f"SELECT * FROM products WHERE {sql_field} BETWEEN ? AND ? ORDER BY {sql_field}"
+        params = (value, value2)
+    else:
+        connection.close()
+        return []
+
+    cursor.execute(query, params)
+    products = cursor.fetchall()
+    connection.close()
+    return products
