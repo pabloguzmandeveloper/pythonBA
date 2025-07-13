@@ -4,11 +4,9 @@ App Features - Database operations and CRUD functions
 
 import sqlite3
 
-from validators import fields_validator
 
-
-def get_database_connection():
-    """Get a database connection"""
+def setup_database():
+    """Initialize the database and create tables if they don't exist"""
     connection = sqlite3.connect("inventory.db")
     cursor = connection.cursor()
 
@@ -24,35 +22,20 @@ def get_database_connection():
         )
         """
     )
-
-    return connection, cursor
-
-
-def get_valid_input(prompt, field_type):
-    while True:
-        user_input = input(prompt)
-        is_valid, error_message, processed_value = fields_validator(
-            user_input, field_type
-        )
-        if is_valid:
-            return processed_value
-        print(f"❌ Error: {error_message}")
-        print("Please try again.\n")
+    connection.commit()
+    return connection
 
 
-def add_product():
+def get_database_connection():
+    """Get a database connection"""
+    return sqlite3.connect("inventory.db")
+
+
+def add_product_to_db(name, description, stock, price, category):
     """Add a new product to the database"""
-    print("=== Add New Product ===\n")
+    connection = get_database_connection()
+    cursor = connection.cursor()
 
-    name = get_valid_input("Enter the product name: ", "name")
-    description = get_valid_input("Enter the product description: ", "description")
-    stock = get_valid_input("Enter the product stock: ", "stock")
-    price = get_valid_input("Enter the product price: ", "price")
-    category = get_valid_input("Enter the product category: ", "category")
-
-    connection, cursor = get_database_connection()
-
-    """ Add a new product to the database if the input is valid """
     cursor.execute(
         """
         INSERT INTO products (name, description, stock, price, category)
@@ -60,11 +43,10 @@ def add_product():
         """,
         (name, description, stock, price, category),
     )
-
-    """ Commit the changes to the database and close the connection """
     connection.commit()
-    print("\n✅ Product added successfully!!!")
+    product_id = cursor.lastrowid
     connection.close()
+    return product_id
 
 
 def get_all_products():
