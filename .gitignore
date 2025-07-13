@@ -3,6 +3,6 @@ __pycache__/
 .mypy_cache/
 drafts/
 trash/
-formt_python.py
+format_python.py
 test_formateo.py
 .DS_Store
