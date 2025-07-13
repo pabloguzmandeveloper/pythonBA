@@ -70,8 +70,7 @@ def add_product():
 
 def get_all_products():
     """Get all products from the database"""
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    connection, cursor = get_database_connection()
 
     cursor.execute("SELECT * FROM products ORDER BY id")
     products = cursor.fetchall()
@@ -81,8 +80,7 @@ def get_all_products():
 
 def search_product_by_id(product_id):
     """Search for a product by ID"""
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    connection, cursor = get_database_connection()
 
     cursor.execute("SELECT * FROM products WHERE id = ?", (product_id,))
     product = cursor.fetchone()
@@ -92,8 +90,7 @@ def search_product_by_id(product_id):
 
 def search_products_by_name(name):
     """Search for products by name (partial match)"""
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    connection, cursor = get_database_connection()
 
     cursor.execute("SELECT * FROM products WHERE name LIKE ?", (f"%{name}%",))
     products = cursor.fetchall()
@@ -103,8 +100,7 @@ def search_products_by_name(name):
 
 def search_products_by_category(category):
     """Search for products by category"""
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    connection, cursor = get_database_connection()
 
     cursor.execute("SELECT * FROM products WHERE category LIKE ?", (f"%{category}%",))
     products = cursor.fetchall()
@@ -114,8 +110,7 @@ def search_products_by_category(category):
 
 def update_product_in_db(product_id, name, description, stock, price, category):
     """Update an existing product in the database"""
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    connection, cursor = get_database_connection()
 
     cursor.execute(
         """
@@ -133,8 +128,7 @@ def update_product_in_db(product_id, name, description, stock, price, category):
 
 def delete_product_from_db(product_id):
     """Delete a product from the database"""
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    connection, cursor = get_database_connection()
 
     # First get the product name for confirmation
     cursor.execute("SELECT name FROM products WHERE id = ?", (product_id,))
@@ -153,8 +147,7 @@ def delete_product_from_db(product_id):
 
 def get_products_count():
     """Get total number of products"""
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    connection, cursor = get_database_connection()
 
     cursor.execute("SELECT COUNT(*) FROM products")
     count = cursor.fetchone()[0]
@@ -164,8 +157,7 @@ def get_products_count():
 
 def get_inventory_value():
     """Calculate total inventory value"""
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    connection, cursor = get_database_connection()
 
     cursor.execute(
         "SELECT SUM(CAST(REPLACE(REPLACE(price, '$', ''), ' ', '') AS REAL) * stock) FROM products"
@@ -177,8 +169,7 @@ def get_inventory_value():
 
 def get_low_stock_count(threshold=10):
     """Get count of products with low stock"""
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    connection, cursor = get_database_connection()
 
     cursor.execute(
         "SELECT COUNT(*) FROM products WHERE CAST(stock AS INTEGER) < ?", (threshold,)
@@ -190,8 +181,7 @@ def get_low_stock_count(threshold=10):
 
 def get_products_by_category():
     """Get products grouped by category"""
-    connection = get_database_connection()
-    cursor = connection.cursor()
+    connection, cursor = get_database_connection()
 
     cursor.execute("SELECT category, COUNT(*) FROM products GROUP BY category")
     categories = cursor.fetchall()
