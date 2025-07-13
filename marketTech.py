@@ -32,33 +32,29 @@ def open_db():
     return connection, cursor
 
 
-def add_product():
-    name = input("Enter the product name: ")
-    description = input("Enter the product description: ")
-    stock = input("Enter the product stock: ")
-    price = input("Enter the product price: ")
-    category = input("Enter the product category: ")
-
-    # Validaciones usando la función centralizada
-    fields_to_validate = [
-        (name, "name"),
-        (description, "description"),
-        (stock, "stock"),
-        (price, "price"),
-        (category, "category"),
-    ]
-    # Dictionary for processed fields
-    processed_fields = {}
-
-    for field_value, field_type in fields_to_validate:
+def get_valid_input(prompt, field_type):
+    while True:
+        user_input = input(prompt)
         is_valid, error_message, processed_value = fields_validator(
-            field_value, field_type
+            user_input, field_type
         )
-        if not is_valid:
-            print(error_message)
-            return
-        processed_fields[field_type] = processed_value  # Save processed value
+        if is_valid:
+            return processed_value
+        print(f"❌ Error: {error_message}")
+        print("Please try again.\n")
 
+
+def add_product():
+    print("=== Add New Product ===\n")
+
+    # Validar cada input individualmente
+    name = get_valid_input("Enter the product name: ", "name")
+    description = get_valid_input("Enter the product description: ", "description")
+    stock = get_valid_input("Enter the product stock: ", "stock")
+    price = get_valid_input("Enter the product price: ", "price")
+    category = get_valid_input("Enter the product category: ", "category")
+
+    # Si llegamos aquí, todos los inputs son válidos
     connection, cursor = open_db()
 
     cursor.execute(
@@ -66,17 +62,11 @@ def add_product():
         INSERT INTO products (name, description, stock, price, category)
         VALUES (?, ?, ?, ?, ?)
         """,
-        (
-            processed_fields["name"],
-            processed_fields["description"],
-            processed_fields["stock"],
-            processed_fields["price"],
-            processed_fields["category"],
-        ),  # Use processed values
+        (name, description, stock, price, category),
     )
 
     connection.commit()
-    print("Product added successfully!!!")
+    print("\n✅ Product added successfully!!!")
     connection.close()
 
 
