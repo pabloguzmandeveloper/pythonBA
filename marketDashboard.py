@@ -13,6 +13,7 @@ from appFeatures import (
     get_low_stock_count,
     get_products_by_category,
     get_products_count,
+    get_valid_input,
     search_product_by_id,
     search_products_by_category,
     search_products_by_name,
@@ -111,12 +112,10 @@ class MarketDashboard:
 
     def delete_product(self):
         """Delete a product from the database"""
-        print("\n=== DELETE PRODUCT ===")
+        print("\n=== DELETE PRODUCT BY ID -- VERY DANGEROUS ===")
 
         # Show all products
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT id, name FROM products ORDER BY id")
-        products = cursor.fetchall()
+        products = get_all_products()
 
         if not products:
             print("No products available to delete.")
@@ -124,31 +123,29 @@ class MarketDashboard:
             return
 
         print("Available products:")
-        for product_id, name in products:
+        for product in products:
+            product_id, name, _, _, _, _ = product
             print(f"{product_id}. {name}")
 
-        try:
-            product_id = int(input("\nEnter product ID to delete: "))
+        # Get product ID with validation
+        product_id = get_valid_input("\nEnter product ID to delete: ", "id")
 
-            # Check if product exists
-            cursor.execute("SELECT name FROM products WHERE id = ?", (product_id,))
-            product = cursor.fetchone()
+        # Delete product using appFeatures function
+        product_name, success = delete_product_from_db(product_id)
 
-            if not product:
-                print("❌ Product not found.")
-            else:
-                confirm = input(
-                    f"Are you sure you want to delete '{product[0]}'? (y/N): "
-                ).lower()
-                if confirm == "y":
-                    cursor.execute("DELETE FROM products WHERE id = ?", (product_id,))
-                    self.connection.commit()
-                    print(f"✅ Product '{product[0]}' deleted successfully!")
+        if product_name:
+            confirm = input(
+                f"Are you sure you want to delete '{product_name}'? (y/N): "
+            ).lower()
+            if confirm == "y":
+                if success:
+                    print(f"✅ Product '{product_name}' deleted successfully!")
                 else:
-                    print("❌ Deletion cancelled.")
-
-        except ValueError:
-            print("❌ Invalid product ID.")
+                    print("❌ Error deleting product.")
+            else:
+                print("❌ Deletion cancelled.")
+        else:
+            print("❌ Product not found.")
 
         input("\nPress Enter to continue...")
 
