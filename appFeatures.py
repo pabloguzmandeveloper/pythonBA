@@ -223,48 +223,45 @@ def delete_product_from_db(product_id):
         return None, False
 
 
-def get_products_count():
-    """Get total number of products"""
+def get_complete_report():
+    """Get all report data in a single database connection for efficiency
+
+    Returns:
+        dict: {
+            'total_products': int,
+            'total_value': float,
+            'low_stock_count': int,
+            'categories': list of tuples (category, count)
+        }
+    """
     connection, cursor = get_database_connection()
 
+    # Total products
     cursor.execute("SELECT COUNT(*) FROM products")
-    count = cursor.fetchone()[0]
-    connection.close()
-    return count
+    total_products = cursor.fetchone()[0]
 
-
-def get_inventory_value():
-    """Calculate total inventory value"""
-    connection, cursor = get_database_connection()
-
+    # Total inventory value
     cursor.execute(
         "SELECT SUM(CAST(REPLACE(REPLACE(price, '$', ''), ' ', '') AS REAL) * stock) FROM products"
     )
     total_value = cursor.fetchone()[0] or 0
-    connection.close()
-    return total_value
 
+    # Low stock products (less than 10)
+    cursor.execute("SELECT COUNT(*) FROM products WHERE CAST(stock AS INTEGER) < 10")
+    low_stock_count = cursor.fetchone()[0]
 
-def get_low_stock_count(threshold=10):
-    """Get count of products with low stock"""
-    connection, cursor = get_database_connection()
-
-    cursor.execute(
-        "SELECT COUNT(*) FROM products WHERE CAST(stock AS INTEGER) < ?", (threshold,)
-    )
-    count = cursor.fetchone()[0]
-    connection.close()
-    return count
-
-
-def get_products_by_category():
-    """Get products grouped by category"""
-    connection, cursor = get_database_connection()
-
+    # Products by category
     cursor.execute("SELECT category, COUNT(*) FROM products GROUP BY category")
     categories = cursor.fetchall()
+
     connection.close()
-    return categories
+
+    return {
+        "total_products": total_products,
+        "total_value": total_value,
+        "low_stock_count": low_stock_count,
+        "categories": categories,
+    }
 
 
 def get_products_by_numeric_filter(field, condition, value, value2=None):

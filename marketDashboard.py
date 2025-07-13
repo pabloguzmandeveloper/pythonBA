@@ -9,17 +9,13 @@ from appFeatures import (
     add_product,
     delete_product_from_db,
     get_all_products,
-    get_inventory_value,
-    get_low_stock_count,
-    get_products_by_category,
+    get_complete_report,
     get_products_by_numeric_filter,
-    get_products_count,
     get_valid_input,
     search_product_by_id,
     search_products_by_category,
     search_products_by_name,
     update_product,
-    update_product_in_db,
 )
 
 
@@ -154,19 +150,16 @@ class MarketDashboard:
         """Generate a summary report"""
         print("\n=== INVENTORY REPORT ===")
 
-        # Get report data using appFeatures functions
-        total_products = get_products_count()
-        total_value = get_inventory_value()
-        low_stock_count = get_low_stock_count()
-        categories = get_products_by_category()
+        # Get all report data in a single optimized database call
+        report_data = get_complete_report()
 
-        print(f"Total Products: {total_products}")
-        print(f"Total Inventory Value: ${total_value:.2f}")
-        print(f"Low Stock Products: {low_stock_count}")
+        print(f"Total Products: {report_data['total_products']}")
+        print(f"Total Inventory Value: ${report_data['total_value']:.2f}")
+        print(f"Low Stock Products: {report_data['low_stock_count']}")
 
-        if categories:
+        if report_data["categories"]:
             print("\nProducts by Category:")
-            for category, count in categories:
+            for category, count in report_data["categories"]:
                 print(f"  {category}: {count} products")
 
         # Ask for detailed filter report
