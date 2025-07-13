@@ -47,14 +47,12 @@ def get_valid_input(prompt, field_type):
 def add_product():
     print("=== Add New Product ===\n")
 
-    # Validar cada input individualmente
     name = get_valid_input("Enter the product name: ", "name")
     description = get_valid_input("Enter the product description: ", "description")
     stock = get_valid_input("Enter the product stock: ", "stock")
     price = get_valid_input("Enter the product price: ", "price")
     category = get_valid_input("Enter the product category: ", "category")
 
-    # Si llegamos aquí, todos los inputs son válidos
     connection, cursor = open_db()
 
     cursor.execute(
@@ -70,5 +68,4 @@ def add_product():
     connection.close()
 
 
-# Descomentar la siguiente línea para probar la función
 add_product()
