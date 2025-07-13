@@ -40,6 +40,26 @@ def get_valid_input(prompt, field_type):
         print("Please try again.\n")
 
 
+def get_valid_input_with_default(prompt, field_type, default_value):
+    """Get valid input with default value if Enter is pressed"""
+    while True:
+        user_input = input(prompt).strip()
+
+        # If empty, return default value
+        if not user_input:
+            return default_value
+
+        # Otherwise validate the input
+        is_valid, error_message, processed_value = fields_validator(
+            user_input, field_type
+        )
+        if is_valid:
+            return processed_value
+
+        print(f"❌ Error: {error_message}")
+        print("Please try again.\n")
+
+
 def get_product_inputs():
     """Get the 5 standard product inputs with validation"""
     name = get_valid_input("Enter the product name: ", "name")
@@ -157,39 +177,20 @@ def update_product():
     print("(Press Enter to keep current value)")
 
     # Get new values with current values as default
-    name_input = input(f"Name [{current_name}]: ").strip()
-    name = (
-        get_valid_input(f"Name [{current_name}]: ", "name")
-        if name_input
-        else current_name
+    name = get_valid_input_with_default(
+        f"Name [{current_name}]: ", "name", current_name
     )
-
-    desc_input = input(f"Description [{current_description}]: ").strip()
-    description = (
-        get_valid_input(f"Description [{current_description}]: ", "description")
-        if desc_input
-        else current_description
+    description = get_valid_input_with_default(
+        f"Description [{current_description}]: ", "description", current_description
     )
-
-    stock_input = input(f"Stock [{current_stock}]: ").strip()
-    stock = (
-        get_valid_input(f"Stock [{current_stock}]: ", "stock")
-        if stock_input
-        else current_stock
+    stock = get_valid_input_with_default(
+        f"Stock [{current_stock}]: ", "stock", current_stock
     )
-
-    price_input = input(f"Price [{current_price}]: ").strip()
-    price = (
-        get_valid_input(f"Price [{current_price}]: ", "price")
-        if price_input
-        else current_price
+    price = get_valid_input_with_default(
+        f"Price [{current_price}]: ", "price", current_price
     )
-
-    category_input = input(f"Category [{current_category}]: ").strip()
-    category = (
-        get_valid_input(f"Category [{current_category}]: ", "category")
-        if category_input
-        else current_category
+    category = get_valid_input_with_default(
+        f"Category [{current_category}]: ", "category", current_category
     )
 
     # Update in database
