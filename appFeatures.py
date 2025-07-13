@@ -132,6 +132,80 @@ def update_product_in_db(product_id, name, description, stock, price, category):
     return rows_affected > 0
 
 
+def update_product():
+    """Update an existing product with UI"""
+    print("=== Update Product ===\n")
+
+    # Get product ID
+    product_id = get_valid_input("Enter the product ID to update: ", "id")
+
+    # Get current product data
+    current_product = search_product_by_id(product_id)
+
+    if not current_product:
+        print("❌ Product not found.")
+        return
+
+    # Extract current values
+    current_name = current_product[1]
+    current_description = current_product[2]
+    current_stock = current_product[3]
+    current_price = current_product[4]
+    current_category = current_product[5]
+
+    print(f"\nUpdating product: {current_name}")
+    print("(Press Enter to keep current value)")
+
+    # Get new values with current values as default
+    name_input = input(f"Name [{current_name}]: ").strip()
+    name = (
+        get_valid_input(f"Name [{current_name}]: ", "name")
+        if name_input
+        else current_name
+    )
+
+    desc_input = input(f"Description [{current_description}]: ").strip()
+    description = (
+        get_valid_input(f"Description [{current_description}]: ", "description")
+        if desc_input
+        else current_description
+    )
+
+    stock_input = input(f"Stock [{current_stock}]: ").strip()
+    stock = (
+        get_valid_input(f"Stock [{current_stock}]: ", "stock")
+        if stock_input
+        else current_stock
+    )
+
+    price_input = input(f"Price [{current_price}]: ").strip()
+    price = (
+        get_valid_input(f"Price [{current_price}]: ", "price")
+        if price_input
+        else current_price
+    )
+
+    category_input = input(f"Category [{current_category}]: ").strip()
+    category = (
+        get_valid_input(f"Category [{current_category}]: ", "category")
+        if category_input
+        else current_category
+    )
+
+    # Update in database
+    success = update_product_in_db(
+        product_id, name, description, stock, price, category
+    )
+
+    if success:
+        print("✅ Product updated successfully!")
+    else:
+        print("❌ Error updating product.")
+
+
+update_product()
+
+
 def delete_product_from_db(product_id):
     """Delete a product from the database"""
     connection, cursor = get_database_connection()

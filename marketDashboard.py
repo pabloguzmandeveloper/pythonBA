@@ -16,6 +16,7 @@ from appFeatures import (
     search_product_by_id,
     search_products_by_category,
     search_products_by_name,
+    update_product,
     update_product_in_db,
 )
 
@@ -299,7 +300,7 @@ class MarketDashboard:
                 elif option == "3":
                     self.search_product()
                 elif option == "4":
-                    self.update_product()
+                    update_product()
                 elif option == "5":
                     self.delete_product()
                 elif option == "6":

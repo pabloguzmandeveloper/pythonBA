@@ -56,6 +56,12 @@ def fields_validator(input_field, type):
 
     """Specific validators"""
 
+    def validate_id(value):
+        """Validate the id field"""
+        if not is_only_numbers(value):
+            return False, "The id must be a valid integer", None
+        return True, None, value
+
     def validate_name(value):
         """Validate the name field"""
         if not has_valid_chars(value):
@@ -151,6 +157,7 @@ def fields_validator(input_field, type):
 
     """Validator dictionary"""
     validators_field = {
+        "id": validate_id,
         "name": validate_name,
         "description": validate_description,
         "stock": validate_stock,
