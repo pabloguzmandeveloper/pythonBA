@@ -68,4 +68,46 @@ def add_product():
     connection.close()
 
 
-add_product()
+def show_products():
+    print("=== Show Products ===\n")
+
+    connection, cursor = open_db()
+
+    cursor.execute("SELECT * FROM products")
+    products = cursor.fetchall()
+
+
+def search_product():
+    print("=== Search Product ===\n")
+
+    connection, cursor = open_db()
+
+    cursor.execute("SELECT * FROM products")
+    products = cursor.fetchall()
+
+
+def update_product():
+    print("=== Update Product ===\n")
+
+    connection, cursor = open_db()
+
+    cursor.execute("SELECT * FROM products")
+    products = cursor.fetchall()
+
+
+def delete_product():
+    print("=== Delete Product ===\n")
+
+    connection, cursor = open_db()
+
+    cursor.execute("SELECT * FROM products")
+    products = cursor.fetchall()
+
+
+def custom_report():
+    print("=== Custom Report ===\n")
+
+    connection, cursor = open_db()
+
+    cursor.execute("SELECT * FROM products")
+    products = cursor.fetchall()
