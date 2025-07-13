@@ -318,9 +318,6 @@ class MarketDashboard:
                 print(f"\n❌ An error occurred: {e}")
                 input("\nPress Enter to continue...")
 
-        # Close database connection
-        self.connection.close()
-
 
 if __name__ == "__main__":
     dashboard = MarketDashboard()
