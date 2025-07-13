@@ -1,40 +1,15 @@
-# Validations numeric
-
-
-def is_only_integer(value):
-    return value.isdigit() or (value.startswith("-") and value[1:].isdigit())
-
-
-def is_only_decimal(value):
-    # Permitir un solo punto y opcionalmente un signo negativo
-    cleaned = value.replace("-", "", 1).replace(".", "", 1)
-    return cleaned.isdigit() and value.count(".") <= 1
-
-
-def is_only_numeric(value):
-    return is_only_integer(value) or is_only_decimal(value)
-
-
-# Validations text
-
-
-def is_only_text(value):
-    return value.isalpha()
-
-
-def is_only_text_with_spaces(value):
-    return value.isalpha() and " " in value
-
-
-# Validations text with special characters
-
-
 def is_valid_char(char):
     return char.isalnum() or char in "+*.,:-_><!\"#$%&/()=?¡¿'°[]{} "
 
 
 def has_valid_chars(value):
     return all(is_valid_char(char) for char in value)
+
+
+def is_only_numbers(value):
+    # Verifica si el valor contiene solo números (y opcionalmente espacios y signos)
+    cleaned = value.replace(" ", "").replace("-", "").replace(".", "")
+    return cleaned.isdigit()
 
 
 def validate_text_length(value, min_length, max_length):
@@ -78,6 +53,12 @@ def fields_validator(input_field, type):
                 "The text contains invalid characters, please write a valid text",
                 None,
             )
+        if is_only_numbers(value):
+            return (
+                False,
+                "The name cannot contain only numbers, please include letters",
+                None,
+            )
         if not validate_text_length(value, 3, 20):
             return (
                 False,
@@ -91,6 +72,12 @@ def fields_validator(input_field, type):
             return (
                 False,
                 "The text contains invalid characters, please write a valid text",
+                None,
+            )
+        if is_only_numbers(value):
+            return (
+                False,
+                "The description cannot contain only numbers, please include letters",
                 None,
             )
         if not validate_text_length(value, 3, 100):
@@ -131,6 +118,12 @@ def fields_validator(input_field, type):
             return (
                 False,
                 "The category contains invalid characters, please write a valid text",
+                None,
+            )
+        if is_only_numbers(value):
+            return (
+                False,
+                "The category cannot contain only numbers, please include letters",
                 None,
             )
         if not validate_text_length(value, 3, 8):
