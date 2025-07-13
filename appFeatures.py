@@ -204,9 +204,6 @@ def update_product():
         print("❌ Error updating product.")
 
 
-update_product()
-
-
 def delete_product_from_db(product_id):
     """Delete a product from the database"""
     connection, cursor = get_database_connection()

@@ -109,7 +109,6 @@ class MarketDashboard:
 
         input("\nPress Enter to continue...")
 
-    def update_product(self):
         """Update an existing product"""
         print("\n=== UPDATE PRODUCT ===")
 
