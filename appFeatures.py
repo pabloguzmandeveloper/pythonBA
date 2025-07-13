@@ -40,15 +40,21 @@ def get_valid_input(prompt, field_type):
         print("Please try again.\n")
 
 
-def add_product():
-    """Add a new product to the database"""
-    print("=== Add New Product ===\n")
-
+def get_product_inputs():
+    """Get the 5 standard product inputs with validation"""
     name = get_valid_input("Enter the product name: ", "name")
     description = get_valid_input("Enter the product description: ", "description")
     stock = get_valid_input("Enter the product stock: ", "stock")
     price = get_valid_input("Enter the product price: ", "price")
     category = get_valid_input("Enter the product category: ", "category")
+    return name, description, stock, price, category
+
+
+def add_product():
+    """Add a new product to the database"""
+    print("=== Add New Product ===\n")
+
+    name, description, stock, price, category = get_product_inputs()
 
     connection, cursor = get_database_connection()
 
