@@ -76,25 +76,21 @@ class MarketDashboard:
         print("3. By Category")
 
         option = input("\nSelect search option: ").strip()
-        cursor = self.connection.cursor()
 
         if option == "1":
             product_id = input("Enter product ID: ").strip()
-            cursor.execute("SELECT * FROM products WHERE id = ?", (product_id,))
+            product = search_product_by_id(product_id)
+            products = [product] if product else []
         elif option == "2":
             name = input("Enter product name (partial match): ").strip()
-            cursor.execute("SELECT * FROM products WHERE name LIKE ?", (f"%{name}%",))
+            products = search_products_by_name(name)
         elif option == "3":
             category = input("Enter category: ").strip()
-            cursor.execute(
-                "SELECT * FROM products WHERE category LIKE ?", (f"%{category}%",)
-            )
+            products = search_products_by_category(category)
         else:
             print("Invalid option.")
             input("\nPress Enter to continue...")
             return
-
-        products = cursor.fetchall()
 
         if products:
             print(f"\n✅ Found {len(products)} product(s):")
