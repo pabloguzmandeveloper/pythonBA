@@ -61,7 +61,7 @@ class MarketDashboard:
             for product in products:
                 product_id, name, description, stock, price, category = product
                 print(
-                    f"{product_id:<5} {name:<20} {price:<15} {stock:<10} {category:<15}"
+                    f"{product_id:<5} {name:<20} {description:<20} {price:<15} {stock:<10} {category:<15}"
                 )
 
             print(f"\nTotal products: {len(products)}")
@@ -102,7 +102,7 @@ class MarketDashboard:
             for product in products:
                 product_id, name, description, stock, price, category = product
                 print(
-                    f"{product_id:<5} {name:<20} {price:<15} {stock:<10} {category:<15}"
+                    f"{product_id:<5} {name:<20} {description:<20} {price:<15} {stock:<10} {category:<15}"
                 )
         else:
             print("❌ No products found.")
