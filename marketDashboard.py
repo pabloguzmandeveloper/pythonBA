@@ -20,20 +20,9 @@ from appFeatures import (
 )
 
 
-class Product:
-    def __init__(self, name, description, stock, price, category, product_id=None):
-        self.id = product_id
-        self.name = name
-        self.description = description
-        self.stock = stock
-        self.price = price
-        self.category = category
-
-    def __str__(self):
-        return f"ID: {self.id} | {self.name} | {self.price} | Stock: {self.stock} | {self.category}"
-
-
 class MarketDashboard:
+    """Initialize the application"""
+
     def __init__(self):
         self.running = True
 
