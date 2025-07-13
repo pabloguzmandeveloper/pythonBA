@@ -5,7 +5,19 @@ Advanced product management system with validation
 
 import sqlite3
 
-from validators import fields_validator
+from appFeatures import (
+    add_product,
+    delete_product_from_db,
+    get_all_products,
+    get_inventory_value,
+    get_low_stock_count,
+    get_products_by_category,
+    get_products_count,
+    search_product_by_id,
+    search_products_by_category,
+    search_products_by_name,
+    update_product_in_db,
+)
 
 
 class Product:
@@ -24,26 +36,6 @@ class Product:
 class MarketDashboard:
     def __init__(self):
         self.running = True
-        self.setup_database()
-
-    def setup_database(self):
-        """Initialize the database and create tables if they don't exist"""
-        self.connection = sqlite3.connect("inventory.db")
-        cursor = self.connection.cursor()
-
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS products (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                description TEXT,
-                stock INTEGER NOT NULL,
-                price REAL NOT NULL,
-                category TEXT
-            )
-            """
-        )
-        self.connection.commit()
 
     def show_menu(self):
         """Display the main menu and get user choice"""
@@ -62,43 +54,6 @@ class MarketDashboard:
         """
         print(menu)
         return input("Select an option: ").strip()
-
-    def get_valid_input(self, prompt, field_type):
-        """Get valid input from user with real-time validation"""
-        while True:
-            user_input = input(prompt)
-            is_valid, error_message, processed_value = fields_validator(
-                user_input, field_type
-            )
-            if is_valid:
-                return processed_value
-            print(f"❌ Error: {error_message}")
-            print("Please try again.\n")
-
-    def add_product(self):
-        """Add a new product with advanced validation"""
-        print("\n=== ADD NEW PRODUCT ===\n")
-
-        # Get validated inputs
-        name = self.get_valid_input("Enter product name: ", "name")
-        description = self.get_valid_input("Enter product description: ", "description")
-        stock = self.get_valid_input("Enter product stock: ", "stock")
-        price = self.get_valid_input("Enter product price: ", "price")
-        category = self.get_valid_input("Enter product category: ", "category")
-
-        # Save to database
-        cursor = self.connection.cursor()
-        cursor.execute(
-            """
-            INSERT INTO products (name, description, stock, price, category)
-            VALUES (?, ?, ?, ?, ?)
-            """,
-            (name, description, stock, price, category),
-        )
-        self.connection.commit()
-
-        print(f"\n✅ Product '{name}' added successfully!")
-        input("\nPress Enter to continue...")
 
     def show_all_products(self):
         """Display all products from database"""
@@ -355,7 +310,7 @@ class MarketDashboard:
                 option = self.show_menu()
 
                 if option == "1":
-                    self.add_product()
+                    add_product()
                 elif option == "2":
                     self.show_all_products()
                 elif option == "3":
