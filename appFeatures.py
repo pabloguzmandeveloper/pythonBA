@@ -63,7 +63,8 @@ def add_product():
 
     """ Commit the changes to the database and close the connection """
     connection.commit()
-    print("\n✅ Product added successfully!!!")
+    product_id = cursor.lastrowid
+    print("\n✅ Product with ID: ", product_id, "added successfully!!!")
     connection.close()
 
 
